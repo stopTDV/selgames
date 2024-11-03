@@ -22,6 +22,7 @@ const config = {
       colors: {
         "blue-primary": "#2352A0",
         "blue-bg": "#A9CBEB",
+        "blue-hover": "#4F75B3",
         "orange-primary": "#FC9300",
         "orange-bg": "#FFDFB3",
         "orange-light-bg": "#FFF4E5",
@@ -45,6 +46,17 @@ const config = {
         border: "#E1E4ED",
         unselected: "#7A8086",
         "menu-item-hover": "#F1F3F7",
+        "font-600": "#7A8086",
+        "font-900": "#38414B",
+        "light-red-hover": "#F3E5E5",
+        "dark-red-hover": "#A23333",
+      },
+      fontSize: {
+        "5.5xl": "56px",
+        "2.5xl": "34px",
+      },
+      height: {
+        game: "600px",
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"], // Default `Poppins` font family to sans
@@ -54,10 +66,8 @@ const config = {
         inter: ["Inter", "sans-serif"],
         rubik: ["Rubik", "Poppins", "sans-serif"],
       },
-      fontSize: {
-        "2halfxl": "34px",
-      },
       margin: {
+        "18": "72px",
         "30": "120px",
       },
       keyframes: {
