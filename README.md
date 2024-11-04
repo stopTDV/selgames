@@ -66,11 +66,21 @@ The Dockerized application will have live-reloading of changes made on the host 
   npm run add-initial-data
   ```
 
-Note: You cannot have another mongo instance running at `mongodb://localhost:27017`, Docker will spin up the db inside of docker. It is accessible at `mongodb://localhost:27017` locally outside of the container.
-
-Note: On linux-based operating systems, if you come across an entrypoint permission error (i.e. `process: exec: "./entrypoint.sh": permission denied: unknown`), run `chmod +x ./entrypoint.sh` to make the shell file an executable.
-
-Windows Users: If you come across this error `exec ./entrypoint.sh: no such file or directory` when running the docker compose command, please follow this [Stackoverflow thread](https://stackoverflow.com/questions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
+Note: You cannot have another mongo instance running at `mongodb://localhost:27017`, Docker will spin up the db inside of
+I would fight atlas for you
+5:36
+Natasha Valluri
+email: testdrbuser@gmail.com
+5:36
+Natasha Valluri
+password: Password123!
+5:37
+Natasha Valluri
+I’m pretty sure
+￼
+￼
+￼Hayden Carpenter
+Hayden Carpenter  5:47 PMstions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
 
 ## Major Technologies
 
@@ -84,7 +94,7 @@ Windows Users: If you come across this error `exec ./entrypoint.sh: no such file
 - Local secrets: `.env.local` in Bitwarden. Used when setting up local container with the Bitwarden CLI. 
 
 ### Databases
-Production Database: We're planning to spin up Mongo in Azure, but we've had issues with Azure giving us permission to. The NP is aware of this problem and we're trying to sort it out, but we have been unable to do so before DRB.
+Production Database: We're planning to spin up Mongo in Azure, but we've had issues with Azure giving us permission to. The NP is aware of this problem and we're trying to sort it out, but we have been unable to do so before DRB. We have temporarily spinned up a cluster on Atlas using the DRB test email.
 
 Local Database: MongoDB on Atlas on the Jennifer Ann's Mongo Account (Sign in with our Gmail located in Bitwarden).
 
