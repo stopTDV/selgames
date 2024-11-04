@@ -54,6 +54,7 @@ const config = {
       fontSize: {
         "5.5xl": "56px",
         "2.5xl": "34px",
+        "14pt": "14pt",
       },
       height: {
         game: "600px",
