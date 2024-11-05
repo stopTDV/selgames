@@ -19,12 +19,14 @@ jobs:
 
       - name: API Request to Update Game Popularity Endpoint
         env:
-          GAME_POPULARITY_CRON_KEY: ${{ secrets.GAME_POPULARITY_CRON_KEY }}
-          DEPLOYMENT_BASE_URL: ${{ secrets.DEPLOYMENT_BASE_URL }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          CRON_KEY: ${{ secrets.GAME_POPULARITY_CRON_KEY }}
+          URL: ${{ secrets.DEPLOYMENT_BASE_URL }}
         run: |
           echo "Updating game popularity"
-          RESPONSE=$(curl -X POST -H "x-api-key: $GAME_POPULARITY_CRON_KEY" -w "\n%{http_code}\n" "$DEPLOYMENT_BASE_URL/api/games/popularity")
+          RESPONSE=$(curl -X POST -H "x-api-key: $CRON_KEY" -w "\n%{http_code}\n" "$URL/api/games/popularity")
           STATUS=$(echo "$RESPONSE" | sed -n '2p')
+          echo "Response: $RESPONSE"
           if [[ $STATUS == 200 ]]; then
            echo "Game popularities updated successfully."
           else
