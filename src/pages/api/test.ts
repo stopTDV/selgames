@@ -6,7 +6,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { testConnection, testRender } = req.query;
+  const { testConnection, testRender, testNetlifyEnv } = req.query;
 
   try {
     // Test database connection
@@ -30,6 +30,12 @@ export default async function handler(
     if (testRender === "true") {
       return res.status(HTTP_STATUS_CODE.OK).json({
         message: "Render test successful",
+      });
+    }
+
+    if (testNetlifyEnv === "true") {
+      return res.status(HTTP_STATUS_CODE.OK).json({
+        message: JSON.stringify(process.env),
       });
     }
 
