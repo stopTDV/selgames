@@ -44,6 +44,7 @@ const GameSchema = new Schema<IGame>(
     },
     description: { type: String, required: true },
     webGLBuild: { type: Boolean, default: false },
+    remoteUrl: { type: Boolean, default: false },
     builds: { type: [BuildSchema], default: [] },
     lesson: { type: String },
     parentingGuide: { type: String },
@@ -51,6 +52,7 @@ const GameSchema = new Schema<IGame>(
     videoTrailer: { type: String },
     preview: { type: Boolean, required: true },
     image: { type: String, required: true },
+    popularity: { type: Number, default: 0 },
   },
   { versionKey: false },
 );

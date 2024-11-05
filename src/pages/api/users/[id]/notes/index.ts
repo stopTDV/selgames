@@ -4,11 +4,19 @@ import { HTTP_STATUS_CODE } from "@/utils/consts";
 import { UserDoesNotExistException } from "@/utils/exceptions/user";
 import { noteSchema } from "@/utils/types";
 import { NextApiRequest, NextApiResponse } from "next";
-
+import { authenticateAdminOrSameUser } from "@/pages/api/auth/[...nextauth]";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const authenticated = await authenticateAdminOrSameUser(
+    req,
+    res,
+    req.query.id as string,
+  );
+  if (authenticated !== true) {
+    return authenticated;
+  }
   switch (req.method) {
     case "GET":
       return getNotesHandler(req, res);
@@ -26,8 +34,8 @@ async function getNotesHandler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const gameId = req.query.gameId as string | undefined;
-    const notes = await getNotes(id, gameId);
-
+    let notes = await getNotes(id, gameId);
+    notes = notes.filter((note) => !note.markedToDelete);
     return res.status(200).send({
       data: notes,
     });

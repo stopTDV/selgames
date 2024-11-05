@@ -35,7 +35,7 @@ function filterHeaders(headers, env) {
   );
 }
 
-export default {
+const exported = {
   async fetch(request, env) {
     // Only allow GET and HEAD methods
     if (!["GET", "HEAD"].includes(request.method)) {
@@ -171,7 +171,10 @@ export default {
     const allowedOrigins = [
       "http://localhost:3000",
       "https://jennifer-anns.netlify.app",
+      "https://dev--jennifer-anns.netlify.app",
+      "https://production--jennifer-anns.netlify.app",
       "https://main--jennifer-anns.netlify.app",
+      "https://selgames.org/",
     ];
 
     if (allowedOrigins.includes(origin)) {
@@ -190,3 +193,4 @@ export default {
     return newResponse;
   },
 };
+export default exported;

@@ -1,3 +1,4 @@
+import { CustomEvent } from "bog-analytics";
 import { z } from "zod";
 
 const verifyObjectId = (value: string) => {
@@ -48,6 +49,7 @@ export enum AllBuilds {
   mac = "mac",
   webgl = "webgl",
   windows = "windows",
+  remote = "remote",
 }
 
 export enum NonWebGLBuilds {
@@ -57,6 +59,7 @@ export enum NonWebGLBuilds {
   linux = "linux",
   mac = "mac",
   windows = "windows",
+  remote = "remote",
 }
 
 export enum GameContentEnum {
@@ -98,6 +101,7 @@ export const gameSchema = z.object({
   themes: z.array(z.string().refine(verifyObjectId)).optional(),
   tags: z.array(z.string().refine(verifyObjectId)).optional(),
   webGLBuild: z.boolean().optional(),
+  remoteUrl: z.boolean().optional(),
   builds: z.array(buildSchema).optional(),
   description: z.string().min(1, "Description is required"),
   lesson: z.string().url().optional(),
@@ -109,6 +113,7 @@ export const gameSchema = z.object({
     z.string().url().optional(),
   ),
   preview: z.boolean(),
+  popularity: z.number().int().optional(),
 });
 //Since arrays from req.query are just strings, and need to be converted into arrays.
 
@@ -123,11 +128,13 @@ export const editGameSchema = z.object({
   multiClass: z.boolean().optional(),
   description: z.string().optional(),
   webGLBuild: z.boolean().optional(),
+  remoteUrl: z.boolean().optional(),
   builds: z.array(buildSchema).optional(),
   parentingGuide: z.literal("").or(z.string().url()).optional(),
   lesson: z.literal("").or(z.string().url()).optional(),
   answerKey: z.literal("").or(z.string().url()).optional(),
   videoTrailer: z.string().url().or(z.literal("")).optional(),
+  image: z.literal("").or(z.string().url()).optional(),
   preview: z.boolean().optional(),
 });
 
@@ -136,6 +143,7 @@ export const noteSchema = z.object({
   date: z.string().pipe(z.coerce.date()),
   description: z.string(),
   gameId: z.string().refine(verifyObjectId).optional(),
+  markedToDelete: z.date().optional(),
 });
 
 export enum UserLabel {
@@ -151,8 +159,10 @@ export const userSchema = z.object({
   hashedPassword: z.string(),
   firstName: z.string(),
   lastName: z.string(),
+  markedToDelete: z.date().optional(),
   notes: z.array(noteSchema),
   label: z.nativeEnum(UserLabel),
+  tracked: z.boolean(),
 });
 
 // Admin
@@ -161,13 +171,26 @@ export const adminSchema = z.object({
   lowercaseEmail: z.string().email("Not a valid email").optional(),
 });
 
-// Email Format
-export const emailSchema = z.object({
-  email: z.string().email(),
-  firstName: z.string(),
-  lastName: z.string(),
-  message: z.string(),
+//Contact Info
+export const contactSchema = z.object({
   gameName: z.string(),
+  message: z.string(),
+  userId: z.string().length(24),
+});
+
+// VerificationLog
+export enum VerificationLogType {
+  PASSWORD_RESET = "PASSWORD_RESET",
+  EMAIL_VERIFICATION = "EMAIL_VERIFICATION",
+}
+
+export const verificationLogSchema = z.object({
+  email: z.string().email("Not a valid email"),
+  type: z.nativeEnum(VerificationLogType),
+  token: z.union([z.string().length(6), z.string().length(36)]),
+  numAttemptsRemaining: z.number().int(),
+  createdAt: z.date(),
+  expiresAt: z.date(),
 });
 
 export type ExtendId<T extends any> = T & { _id: string };
@@ -177,3 +200,20 @@ export const changePWSchema = z.object({
   password: z.string().min(8, "Password must contain at least 8 characters."),
   passwordConfirm: z.string(),
 });
+
+export interface CustomVisitEvent extends CustomEvent {
+  properties: {
+    referrer: string;
+    createdDate: string;
+    userGroup: string; // TODO, use enum
+    userId: string;
+    browserAgent: string;
+  };
+}
+
+export enum SortType {
+  MostPopular = "Most Popular",
+  AtoZ = "A-Z",
+  LastCreated = "Last Created",
+  FirstCreated = "First Created",
+}

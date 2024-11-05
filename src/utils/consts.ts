@@ -1,3 +1,5 @@
+import { EmailRecipient } from "juno-sdk/internal/api";
+
 export enum HTTP_STATUS_CODE {
   BAD_REQUEST = 400,
   OK = 200,
@@ -13,9 +15,11 @@ export enum Pages {
   HOME = "/",
   LOGIN = "/login",
   SIGNUP = "/signup",
+  PASSWORD_RESET = "/password-reset",
   CREATEGAME = "/games/create",
   EDITGAME = "/games/[id]/edit",
   PREVIEWGAME = "/games/[id]/preview",
+  CMSDASHBOARD = "/admin/cms-dashboard",
   ACCOUNTMANAGEMENT = "/admin/account-management",
   THEMES = "/admin/themes",
 }
@@ -30,6 +34,9 @@ export const UNDELETABLE_EMAILS = [
   "susanne@jenniferann.org",
   "testAdmin@gmail.com",
 ];
-export const DEV_ADMIN_CONTACT = "bogjenniferanns@gmail.com";
+export const DEV_ADMIN_CONTACT: EmailRecipient = {
+  email: "bogjenniferanns@gmail.com",
+  name: "Jennifer Ann's Group",
+};
 
-export const MAIL_SEND_DOMAIN = "trial-z86org8kpm1gew13.mlsender.net";
+export const MAIL_SEND_DOMAIN = "gatech.lol";

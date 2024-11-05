@@ -4,11 +4,12 @@ import { noteSchema } from "../../../utils/types";
 
 export interface INote extends z.infer<typeof noteSchema> {}
 
-const NoteSchema = new Schema<INote>(
+export const NoteSchema = new Schema<INote>(
   {
     date: { type: Date, required: true },
     description: { type: String, required: true },
     gameId: { type: Schema.Types.ObjectId, required: true },
+    markedToDelete: { type: Date, default: undefined },
   },
   { versionKey: false },
 );
