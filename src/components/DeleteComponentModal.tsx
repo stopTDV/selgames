@@ -9,7 +9,7 @@ import {
   ChakraProvider,
 } from "@chakra-ui/react";
 import chakraTheme from "@/styles/chakraTheme";
-import { useRouter } from "next/router";
+import { useRouter } from "next/compat/router";
 import { useRef, Dispatch } from "react";
 import { GameDataState } from "./GameScreen/GamePage";
 
@@ -23,7 +23,7 @@ interface Props {
 
 export default function DeleteComponentModal(props: Props) {
   const router = useRouter();
-  const gameID = router.query.id;
+  const gameID = router?.query.id;
   const cancelRef = useRef<HTMLButtonElement | null>(null);
 
   const deleteType = props.deleteType;
@@ -60,7 +60,7 @@ export default function DeleteComponentModal(props: Props) {
     fetch(`/api/games/${gameID}`, {
       method: "DELETE",
     });
-    router.push("/games");
+    router?.push("/games");
   }
 
   async function deleteAnswerKey() {
