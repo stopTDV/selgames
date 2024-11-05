@@ -26,6 +26,7 @@ jobs:
           echo "Updating game popularity"
           RESPONSE=$(curl -X POST -H "x-api-key: $CRON_KEY" -w "\n%{http_code}\n" "$URL/api/games/popularity")
           STATUS=$(echo "$RESPONSE" | sed -n '2p')
+          echo "Response: $RESPONSE"
           if [[ $STATUS == 200 ]]; then
            echo "Game popularities updated successfully."
           else
