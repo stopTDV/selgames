@@ -23,6 +23,7 @@ jobs:
           DEPLOYMENT_BASE_URL: ${{ secrets.DEPLOYMENT_BASE_URL }}
         run: |
           echo "Updating game popularity"
+          echo "$DEPLOYMENT_BASE_URL"
           RESPONSE=$(curl -X POST -H "x-api-key: $GAME_POPULARITY_CRON_KEY" -w "\n%{http_code}\n" "$DEPLOYMENT_BASE_URL/api/games/popularity")
           STATUS=$(echo "$RESPONSE" | sed -n '2p')
           if [[ $STATUS == 200 ]]; then
