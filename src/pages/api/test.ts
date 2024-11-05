@@ -33,11 +33,11 @@ export default async function handler(
       });
     }
 
-    if (testNetlifyEnv === "true") {
-      return res.status(HTTP_STATUS_CODE.OK).json({
-        message: JSON.stringify(process.env),
-      });
-    }
+    // if (testNetlifyEnv === "true") {
+    //   return res.status(HTTP_STATUS_CODE.OK).json({
+    //     message: JSON.stringify(process.env),
+    //   });
+    // }
 
     // Default response if no test params provided
     return res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
