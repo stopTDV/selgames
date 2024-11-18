@@ -17,19 +17,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: API Request to Update Game Popularity Endpoint
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Game Popularity Update Script
         env:
           ENVIRONMENT: ${{ inputs.environment }}
           CRON_KEY: ${{ secrets.GAME_POPULARITY_CRON_KEY }}
           URL: ${{ secrets.DEPLOYMENT_BASE_URL }}
-        run: |
-          echo "Updating game popularity"
-          RESPONSE=$(curl -X POST -H "x-api-key: $CRON_KEY" -w "\n%{http_code}\n" "$URL/api/games/popularity")
-          STATUS=$(echo "$RESPONSE" | sed -n '2p')
-          echo "Response: $RESPONSE"
-          if [[ $STATUS == 200 ]]; then
-           echo "Game popularities updated successfully."
-          else
-            echo "Failed to update game popularities."
-            exit 1 # Set a non-zero exit code to indicate failure
-          fi
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          NEXT_PUBLIC_BOG_ANALYTICS_CLIENT_API_KEY: ${{ secrets.NEXT_PUBLIC_BOG_ANALYTICS_CLIENT_API_KEY }}
+          NEXT_PUBLIC_ENV: ${{ inputs.environment == 'Production' && 'production' || 'development' }}
+        run: npx tsx scripts/updateGamePopularity.ts
