@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/compat/router";
 import { ChangeEvent, useEffect, useState } from "react";
 import TagsComponent from "@/components/Tags/TagsComponent";
 import TabsComponent from "@/components/Tabs/TabsComponent";
@@ -17,6 +17,13 @@ import { getGameById } from "@/server/db/actions/GameAction";
 import EditImage from "@/components/GameScreen/WebGL/EditImage";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { id } = ctx.query;
+
+  if (!id || id === "create") {
+    return {
+      notFound: true,
+    };
+  }
   try {
     const data = await getGameById(ctx.query.id as string);
     const gameData = JSON.parse(JSON.stringify(data));
@@ -40,9 +47,9 @@ const EditGamePage = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
-  const gameID = router.query.id;
+  const gameID = router?.query.id;
   const [curData, setCurData] = useState<GameDataState>(gameData);
-  const [name, setName] = useState(gameData.name);
+  const [name, setName] = useState(gameData?.name);
 
   const { mutateAsync: getDirectUpload } = useMutation({
     mutationFn: (file: File) => fetch("/api/file").then((res) => res.json()),
@@ -50,7 +57,7 @@ const EditGamePage = ({
 
   useEffect(() => {
     if (!gameData) {
-      router.replace("/");
+      router?.replace("/");
     }
     setCurData(gameData);
   }, [gameData]);
@@ -155,9 +162,9 @@ const EditGamePage = ({
     });
 
     if (curData?.preview) {
-      router.push(`/games/${gameID}/preview`);
+      router?.push(`/games/${gameID}/preview`);
     } else {
-      router.push(`/games/${gameID}`);
+      router?.push(`/games/${gameID}`);
     }
   };
 
@@ -173,7 +180,7 @@ const EditGamePage = ({
         />
         <div className="relative flex flex-1 justify-end">
           <EditImage
-            imageURL={gameData.image}
+            imageURL={gameData?.image}
             gameData={curData}
             setGameData={setCurData}
           />

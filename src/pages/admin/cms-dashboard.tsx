@@ -170,8 +170,8 @@ const formatGameEventsData = async (
 
   if (visitEvents) {
     visitEvents.forEach((event) => {
-      const referrer = event.properties.referrer;
-      const match = referrer && referrer.match(/\/games\/([a-zA-Z0-9]{24})/);
+      const pageUrl = event.properties.pageUrl;
+      const match = pageUrl && pageUrl.match(/\/games\/([a-zA-Z0-9]{24})/);
       if (match) {
         const gameId = match[1];
         gamePageHitsMap[gameId] = (gamePageHitsMap[gameId] || 0) + 1;
@@ -454,7 +454,7 @@ const CMSDashboardPage = () => {
       }));
 
       let ws = XLSX.utils.json_to_sheet(entryInfo);
-      let gameName = gameInfo[i]["Game Title"];
+      let gameName = gameInfo[i]["Game Title"].replace(/[\/\\\?\*\:\[\]]/g, "");
       if (gameName.length > 15) {
         gameName = gameName.substring(0, 11) + "...";
       }
@@ -462,7 +462,7 @@ const CMSDashboardPage = () => {
 
       XLSX.utils.book_append_sheet(wb, ws, name);
     });
-    XLSX.writeFile(wb, `Dashboard Analytics (1 ${dataAge}).xlsx`);
+    XLSX.writeFile(wb, `Analytics Dashboard (1 ${dataAge}).xlsx`);
   }
 
   return (

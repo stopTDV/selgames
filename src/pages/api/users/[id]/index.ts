@@ -96,19 +96,25 @@ async function editProfileHandler(req: NextApiRequest, res: NextApiResponse) {
 
     const user = await getUser(req.body._id);
     const emailModified = req.body.email !== user.email;
-    const changeToAdmin =
-      req.body.label == "administrator" &&
-      session?.user.label !== "administrator";
-    if (changeToAdmin) {
-      //Non-admin cannot make others admin
-      throw new GenericUserErrorException(
-        "Non-admin cannot change a user to admin",
-      );
-    }
+    // const changeToAdmin =
+    //   req.body.label == "administrator" &&
+    //   session?.user.label !== "administrator";
+    // // if (changeToAdmin) {
+    //   //Non-admin cannot make others admin
+    //   throw new GenericUserErrorException(
+    //     "Non-admin cannot change a user to admin",
+    //   );
+    // }
     //Ensure label is one of the four allowed value
-    if (!Object.values(UserLabel).includes(req.body.label as UserLabel)) {
+    const userLabels = {
+      Educator: "educator",
+      Student: "student",
+      Parent: "parent",
+      Administrator: "administrator",
+    };
+    if (!Object.values(userLabels).includes(req.body.label as UserLabel)) {
       throw new GenericUserErrorException(
-        `Label must be one of ${Object.values(UserLabel)}`,
+        `Label must be one of ${Object.values(userLabels)}`,
       );
     }
     if (emailModified) {
