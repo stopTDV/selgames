@@ -67,21 +67,7 @@ The Dockerized application will have live-reloading of changes made on the host 
   npm run add-initial-data
   ```
 
-Note: You cannot have another mongo instance running at `mongodb://localhost:27017`, Docker will spin up the db inside of
-I would fight atlas for you
-5:36
-Natasha Valluri
-email: testdrbuser@gmail.com
-5:36
-Natasha Valluri
-password: Password123!
-5:37
-Natasha Valluri
-I’m pretty sure
-￼
-￼
-￼Hayden Carpenter
-Hayden Carpenter 5:47 PMstions/40452508/docker-error-on-an-entrypoint-script-no-such-file-or-directory) to fix it.
+Note: You cannot have another mongo instance running at `mongodb://localhost:27017`, Docker will spin up the db, interally and expose it, instead.
 
 ## Major Technologies
 
