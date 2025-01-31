@@ -1,6 +1,6 @@
 import { userDataSchema } from "@/components/ProfileModal/ProfileModal";
 import { useSession } from "next-auth/react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { z } from "zod";
 import {
   ChakraProvider,
@@ -18,9 +18,9 @@ import SelectedFilters from "@/components/GameGallery/SelectedFilters";
 import GameCardView from "@/components/GameGallery/GameCardView";
 import GamesPagination from "@/components/GameGallery/GamesPagination";
 import { PageRequiredGameQuery } from "@/components/Admin/ThemesTags/GamesSection";
-import { SortType } from "@/utils/types";
 import FilterButtonPopover from "@/components/GameGallery/FilterButtonPopover";
 import SortButtonPopover from "@/components/GameGallery/SortButtonPopover";
+import { useSort } from "@/context/SortContext";
 
 export default function Games() {
   const { data: session } = useSession();
@@ -45,9 +45,9 @@ export default function Games() {
     theme: [],
   });
   const [name, setName] = useState("");
-  const [selectedSort, setSelectedSort] = useState<SortType>(
-    SortType.MostPopular,
-  );
+
+  // UseContext for SelectedSort
+  const { selectedSort, setSelectedSort } = useSort();
 
   useEffect(() => {
     if (currentUser) {

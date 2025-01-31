@@ -8,6 +8,7 @@ import Header from "@/components/Navigation/Header";
 import { Footer } from "@/components/Navigation/Footer";
 import { useRouter } from "next/compat/router";
 import { AnalyticsProvider } from "@/context/AnalyticsContext";
+import { SortProvider } from "@/context/SortContext";
 
 const queryClient = new QueryClient();
 
@@ -26,10 +27,12 @@ export default function App({
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
         <AnalyticsProvider>
-          {showHeaderAndFooter && <Header />}
-          <Component {...pageProps} />
-          <Toaster />
-          {showHeaderAndFooter && <Footer />}
+          <SortProvider>
+            {showHeaderAndFooter && <Header />}
+            <Component {...pageProps} />
+            <Toaster />
+            {showHeaderAndFooter && <Footer />}
+          </SortProvider> 
         </AnalyticsProvider>
       </QueryClientProvider>
     </SessionProvider>
