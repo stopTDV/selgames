@@ -32,7 +32,7 @@ export default function App({
             <Component {...pageProps} />
             <Toaster />
             {showHeaderAndFooter && <Footer />}
-          </SortProvider> 
+          </SortProvider>
         </AnalyticsProvider>
       </QueryClientProvider>
     </SessionProvider>
