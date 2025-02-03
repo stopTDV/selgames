@@ -37,9 +37,11 @@ export default function GameCardView({
     },
   });
 
+  const [loading, setLoading] = useState(true);
   const numPagesRef = useRef<number>(numPages);
 
   useEffect(() => {
+    setLoading(true);
     setGameResultsResource(filterGames(filters));
   }, [filters]);
 
@@ -54,13 +56,16 @@ export default function GameCardView({
       setNumPages(data.numPages);
       numPagesRef.current = data.numPages;
     }
+    if (data) {
+      setLoading(false);
+    }
   }, [data]);
 
   return (
     <>
-      {data ? (
+      {!loading ? (
         <div className="flex w-full flex-row flex-wrap items-center justify-center gap-6 md:justify-normal">
-          {data.games?.length > 0 ? (
+          {data && data.games?.length > 0 ? (
             data.games.map((game: z.infer<typeof gameDataSchema>) => (
               <div key={game.name} className="">
                 <GameCard game={game} />
