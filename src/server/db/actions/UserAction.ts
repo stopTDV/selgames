@@ -20,9 +20,11 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
   await connectMongoDB();
 
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
+  const lowercaseEmail = data.email.toLowerCase();
 
   const userData: z.infer<typeof userSchema> = {
     ...data,
+    lowercaseEmail,
     hashedPassword,
     notes: [],
   };
@@ -36,7 +38,9 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
       mongoErr.code === DUP_KEY_ERROR_CODE
     ) {
       // Determine if that existing user was deleted or not.
-      const existingUser = await UserModel.findOne({ email: userData.email });
+      const existingUser = await UserModel.findOne({
+        lowercaseEmail: userData.lowercaseEmail,
+      });
       if (existingUser && existingUser.markedToDelete) {
         userData.notes = existingUser.notes; //Transfer deleted notes
         // Update old account
@@ -61,7 +65,12 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
 export async function verifyUser(email: string, password: string) {
   await connectMongoDB();
 
-  const user = await UserModel.findOne({ email: email }, { __v: 0 });
+  const user = await UserModel.findOne(
+    {
+      lowercaseEmail: email.toLowerCase(),
+    },
+    { __v: 0 },
+  );
   if (!user || user.markedToDelete) throw new UserDoesNotExistException();
 
   const match = await bcrypt.compare(password, user.hashedPassword);
@@ -96,9 +105,9 @@ export async function getUser(id: z.infer<typeof idSchema>) {
  */
 export async function getUserByEmail(email: string) {
   await connectMongoDB();
-  const user = await UserModel.findOne({ email: email }).select(
-    "-hashedPassword",
-  );
+  const user = await UserModel.findOne({
+    lowercaseEmail: email.toLowerCase(),
+  }).select("-hashedPassword");
   if (!user || user.markedToDelete) {
     throw new UserDoesNotExistException();
   }
@@ -142,7 +151,9 @@ export async function editUser(
   if (!userInfo.notes) {
     userInfo.notes = [];
   }
-  const existingUser = await UserModel.findOne({ email: userInfo.email });
+  const existingUser = await UserModel.findOne({
+    lowercaseEmail: userInfo.email.toLowerCase(),
+  });
 
   if (existingUser && existingUser.toObject()._id.toString() != userInfo._id) {
     if (existingUser.markedToDelete) {
@@ -154,6 +165,7 @@ export async function editUser(
       throw new UserAlreadyExistsException();
     }
   }
+  userInfo.lowercaseEmail = userInfo.email.toLowerCase();
   // Ensures new notes don't overide old ones
   const { notes, ...newUserInfo } = userInfo;
   console.log(notes);

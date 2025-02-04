@@ -17,7 +17,7 @@ import {
 import jwt from "jsonwebtoken";
 
 export const createUserSchema = userSchema
-  .omit({ hashedPassword: true, notes: true })
+  .omit({ lowercaseEmail: true, hashedPassword: true, notes: true })
   .extend({
     password: z.string(),
   });

@@ -7,7 +7,8 @@ export interface INote extends z.infer<typeof noteSchema> {}
 export interface IUser extends z.infer<typeof userSchema> {}
 
 const UserSchema = new Schema<IUser>({
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  lowercaseEmail: { type: String, required: true, unique: true },
   hashedPassword: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },

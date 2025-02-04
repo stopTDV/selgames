@@ -241,10 +241,12 @@ async function deleteUserHandler(req: NextApiRequest, res: NextApiResponse) {
     const deletedUser = await deleteUser(userId);
 
     const correspondingAdmin = await AdminModel.findOne({
-      email: deletedUser.email,
+      lowercaseEmail: deletedUser.email.toLowerCase(),
     });
     if (correspondingAdmin) {
-      await AdminModel.findOneAndDelete({ email: deletedUser.email });
+      await AdminModel.findOneAndDelete({
+        lowercaseEmail: deletedUser.email.toLowerCase(),
+      });
     }
 
     return res.status(HTTP_STATUS_CODE.OK).send(deletedUser);

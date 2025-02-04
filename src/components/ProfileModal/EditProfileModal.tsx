@@ -24,7 +24,11 @@ import {
 import { set } from "mongoose";
 import { Check } from "lucide-react";
 
-const formUserSchema = userSchema.omit({ hashedPassword: true, notes: true });
+const formUserSchema = userSchema.omit({
+  lowercaseEmail: true,
+  hashedPassword: true,
+  notes: true,
+});
 
 type EditProps = {
   setProfileState: React.Dispatch<React.SetStateAction<ProfileState>>;
