@@ -71,6 +71,7 @@ export async function verifyUser(email: string, password: string) {
     },
     { __v: 0 },
   );
+  console.log(user)
   if (!user || user.markedToDelete) throw new UserDoesNotExistException();
 
   const match = await bcrypt.compare(password, user.hashedPassword);
