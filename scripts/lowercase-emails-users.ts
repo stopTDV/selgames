@@ -1,8 +1,8 @@
 import "dotenv/config";
 
 import mongoose from "mongoose";
-import connectMongoDB from "../server/db/mongodb";
-import UserModel from "../server/db/models/UserModel";
+import connectMongoDB from "../src/server/db/mongodb";
+import UserModel from "../src/server/db/models/UserModel";
 
 (async () => {
   await connectMongoDB();
