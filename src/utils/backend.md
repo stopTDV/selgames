@@ -57,7 +57,8 @@ This file contains the schema for the theme model, which is used to categorize g
 
 This file contains the schema for the user model, which is used to store user information.
 
-- email: String, required, unique
+- email: String, required
+- lowercaseEmail: String, required, unique
 - hashedPassword: String, required
 - firstName: String, required
 - lastName: String, required

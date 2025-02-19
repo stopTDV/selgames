@@ -9,7 +9,7 @@ const addNondeletableEmails = async () => {
   for (const email of UNDELETABLE_EMAILS) {
     const admin = { email: email, lowercaseEmail: email.toLowerCase() };
     try {
-      const existingAdmin = await AdminModel.findOne({ email: admin.email });
+      const existingAdmin = await AdminModel.findOne({ lowercaseEmail: admin.email.toLowerCase() });
       if (existingAdmin) throw new AdminAlreadyExistsException();
       await AdminModel.create(admin);
       console.log(`Admin ${admin.email} has been added to database.`);

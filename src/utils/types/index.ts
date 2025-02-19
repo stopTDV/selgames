@@ -156,6 +156,7 @@ export enum UserLabel {
 // User
 export const userSchema = z.object({
   email: z.string().email("Not a valid email"),
+  lowercaseEmail: z.string(),
   hashedPassword: z.string(),
   firstName: z.string(),
   lastName: z.string(),
