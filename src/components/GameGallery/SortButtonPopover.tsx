@@ -65,13 +65,14 @@ const SortButtonPopover: React.FC<SortButtonPopoverProps> = ({
                 }}
               >
                 {item}
-                {selectedSort === item && <Check
-                  className={cx("flex justify-end", {
-                    "text-blue-primary": selectedSort === item,
-                  })}
-                  size="16"
-                />
-                }
+                {selectedSort === item && (
+                  <Check
+                    className={cx("flex justify-end", {
+                      "text-blue-primary": selectedSort === item,
+                    })}
+                    size="16"
+                  />
+                )}
               </button>
             ))}
           </div>
