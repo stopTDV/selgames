@@ -254,11 +254,13 @@ function InformationSlide({
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(ADMIN_PREFERENCE_LABEL_MAP).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
+            {Object.entries(ADMIN_PREFERENCE_LABEL_MAP).map(
+              ([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ),
+            )}
           </SelectContent>
         </Select>
         <p className="absolute bottom-[-2em] text-xs text-red-500">
