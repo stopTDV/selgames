@@ -33,6 +33,16 @@ enum YesNo {
   No = "no",
 }
 
+enum AdminPreference {
+  Yes = "yes",
+  No = "no",
+}
+
+const ADMIN_PREFERENCE_LABEL_MAP: Record<AdminPreference, string> = {
+  [AdminPreference.Yes]: "Yes, I am",
+  [AdminPreference.No]: "No, I am not",
+};
+
 const AGE_LABEL_MAP: Record<YesNo, string> = {
   [YesNo.Yes]: "Yes, I am at least 13 years old",
   [YesNo.No]: "No, I am not 13 years old",
@@ -43,6 +53,7 @@ const LAST_NAME_FORM_KEY = "lastName";
 const LABEL_FORM_KEY = "label";
 const AGE_FORM_KEY = "age";
 const TRACKED_FORM_KEY = "tracked";
+const ADMIN_FORM_KEY = "admin";
 
 export const informationSchema = z.object({
   firstName: z.string().min(1, { message: "This field is required" }),
@@ -63,6 +74,12 @@ export const informationSchema = z.object({
       message: "Sorry, you are not old enough to create an account",
     }),
   tracked: z.boolean(),
+
+  adminPreference: z.nativeEnum(AdminPreference, {
+    errorMap: (issue, ctx) => ({
+      message: "This field is required",
+    }),
+  }),
 });
 
 interface Props {
@@ -88,6 +105,7 @@ function InformationSlide({
     label: undefined,
     age: undefined,
     tracked: undefined,
+    adminPreference: undefined,
   });
 
   const [trackedChecked, setTrackedChecked] = useState<boolean>(true);
@@ -104,6 +122,7 @@ function InformationSlide({
       label: formData.get(LABEL_FORM_KEY),
       age: formData.get(AGE_FORM_KEY),
       tracked: formData.get(TRACKED_FORM_KEY) === "on",
+      adminPreference: formData.get(ADMIN_FORM_KEY),
     };
     const parse = informationSchema.safeParse(input);
     if (!parse.success) {
@@ -114,6 +133,7 @@ function InformationSlide({
         label: errors.label?.at(0),
         age: errors.age?.at(0),
         tracked: errors.tracked?.at(0),
+        adminPreference: errors.adminPreference?.at(0),
       });
       return;
     }
@@ -217,6 +237,32 @@ function InformationSlide({
         </Select>
         <p className="absolute bottom-[-2em] text-xs text-red-500">
           {validationErrors.label}
+        </p>
+      </div>
+      <div className="relative col-span-2 w-full">
+        <label htmlFor={ADMIN_FORM_KEY} className="text-xl">
+          Making an Admin Account?*
+        </label>
+        <Select name={ADMIN_FORM_KEY}>
+          <SelectTrigger
+            className={
+              validationErrors.adminPreference
+                ? "border-red-500 focus-visible:ring-red-500"
+                : "border-input-border focus:border-blue-primary"
+            }
+          >
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(ADMIN_PREFERENCE_LABEL_MAP).map(([value, label]) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="absolute bottom-[-2em] text-xs text-red-500">
+          {validationErrors.adminPreference}
         </p>
       </div>
       <div className="relative col-span-2 w-full">
