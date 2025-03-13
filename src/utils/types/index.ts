@@ -164,6 +164,7 @@ export const userSchema = z.object({
   notes: z.array(noteSchema),
   label: z.nativeEnum(UserLabel),
   tracked: z.boolean(),
+  adminRequested: z.boolean(),
 });
 
 // Admin

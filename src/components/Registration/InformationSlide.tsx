@@ -33,14 +33,14 @@ enum YesNo {
   No = "no",
 }
 
-enum AdminPreference {
+enum AdminRequest {
   Yes = "yes",
   No = "no",
 }
 
-const ADMIN_PREFERENCE_LABEL_MAP: Record<AdminPreference, string> = {
-  [AdminPreference.Yes]: "Yes, I am",
-  [AdminPreference.No]: "No, I am not",
+const ADMIN_PREFERENCE_LABEL_MAP: Record<AdminRequest, string> = {
+  [AdminRequest.Yes]: "Yes, I am",
+  [AdminRequest.No]: "No, I am not",
 };
 
 const AGE_LABEL_MAP: Record<YesNo, string> = {
@@ -75,7 +75,7 @@ export const informationSchema = z.object({
     }),
   tracked: z.boolean(),
 
-  adminPreference: z.nativeEnum(AdminPreference, {
+  adminRequest: z.nativeEnum(AdminRequest, {
     errorMap: (issue, ctx) => ({
       message: "This field is required",
     }),
@@ -105,7 +105,7 @@ function InformationSlide({
     label: undefined,
     age: undefined,
     tracked: undefined,
-    adminPreference: undefined,
+    adminRequest: undefined,
   });
 
   const [trackedChecked, setTrackedChecked] = useState<boolean>(true);
@@ -122,7 +122,7 @@ function InformationSlide({
       label: formData.get(LABEL_FORM_KEY),
       age: formData.get(AGE_FORM_KEY),
       tracked: formData.get(TRACKED_FORM_KEY) === "on",
-      adminPreference: formData.get(ADMIN_FORM_KEY),
+      adminRequest: formData.get(ADMIN_FORM_KEY) === AdminRequest.Yes,
     };
     const parse = informationSchema.safeParse(input);
     if (!parse.success) {
@@ -133,7 +133,7 @@ function InformationSlide({
         label: errors.label?.at(0),
         age: errors.age?.at(0),
         tracked: errors.tracked?.at(0),
-        adminPreference: errors.adminPreference?.at(0),
+        adminRequest: errors.adminRequest?.at(0),
       });
       return;
     }
@@ -141,6 +141,7 @@ function InformationSlide({
       ...accountData,
       ...parse.data,
     };
+
     if (parse.data.label == "administrator") {
       const admin = await fetch(
         `/api/admin?email=${combinedAccountData.email}`,
@@ -246,7 +247,7 @@ function InformationSlide({
         <Select name={ADMIN_FORM_KEY}>
           <SelectTrigger
             className={
-              validationErrors.adminPreference
+              validationErrors.adminRequest
                 ? "border-red-500 focus-visible:ring-red-500"
                 : "border-input-border focus:border-blue-primary"
             }
@@ -264,7 +265,7 @@ function InformationSlide({
           </SelectContent>
         </Select>
         <p className="absolute bottom-[-2em] text-xs text-red-500">
-          {validationErrors.adminPreference}
+          {validationErrors.adminRequest}
         </p>
       </div>
       <div className="relative col-span-2 w-full">
