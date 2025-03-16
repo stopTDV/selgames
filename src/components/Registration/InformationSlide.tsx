@@ -18,14 +18,14 @@ export enum Label {
   Student = "student",
   Parent = "parent",
   Educator = "educator",
-  Administrator = "administrator",
+  ADMINISTRATOR_AWAITING_APPROVAL = "administrator_awaiting_approval",
 }
 
 export const ROLE_LABEL_MAP: Record<Label, string> = {
   [Label.Student]: "Student",
   [Label.Parent]: "Parent",
   [Label.Educator]: "Educator",
-  [Label.Administrator]: "Administrator",
+  [Label.ADMINISTRATOR_AWAITING_APPROVAL]: "Administrator",
 };
 
 enum YesNo {
@@ -105,6 +105,7 @@ function InformationSlide({
       age: formData.get(AGE_FORM_KEY),
       tracked: formData.get(TRACKED_FORM_KEY) === "on",
     };
+
     const parse = informationSchema.safeParse(input);
     if (!parse.success) {
       const errors = parse.error.formErrors.fieldErrors;
@@ -121,22 +122,7 @@ function InformationSlide({
       ...accountData,
       ...parse.data,
     };
-    if (parse.data.label == "administrator") {
-      const admin = await fetch(
-        `/api/admin?email=${combinedAccountData.email}`,
-      );
-      if (!admin.ok) {
-        setIsAlertShowing(true);
-        setAlertType("generic");
-        return;
-      }
-      const admin_data = await admin.json();
-      if (Object.keys(admin_data).length == 0) {
-        setIsAlertShowing(true);
-        setAlertType("admin");
-        return;
-      }
-    }
+
     const res = await fetch("/api/users", {
       method: "POST",
       body: JSON.stringify(combinedAccountData),

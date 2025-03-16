@@ -30,6 +30,7 @@ enum Label {
   PARENT = "parent",
   EDUCATOR = "educator",
   ADMINISTRATOR = "administrator",
+  ADMINISTRATOR_AWAITING_APPROVAL = "administrator_awaiting_approval",
   NONE = "",
   LOADING = "loading",
 }
@@ -41,6 +42,7 @@ const pageRequiredLabels: Record<Pages, Array<Label>> = {
     Label.EDUCATOR,
     Label.ADMINISTRATOR,
     Label.NONE,
+    Label.ADMINISTRATOR_AWAITING_APPROVAL,
   ], // Allow all users
   [Pages.LOGIN]: [Label.NONE], // Only allow public users
   [Pages.SIGNUP]: [Label.NONE], // Only allow public users

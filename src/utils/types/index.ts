@@ -151,6 +151,7 @@ export enum UserLabel {
   Student = "student",
   Parent = "parent",
   Administrator = "administrator",
+  Administrator_Awaiting_Approval = "administrator_awaiting_approval",
 }
 
 // User
