@@ -69,6 +69,7 @@ async function createUserHandler(req: NextApiRequest, res: NextApiResponse) {
     const { email } = emailObject.parse(
       jwt.verify(req.cookies.emailVerificationJwt, process.env.NEXTAUTH_SECRET),
     );
+    console.log(req.body);
     const parsedData = createUserSchema.safeParse(JSON.parse(req.body));
     if (!parsedData.success) {
       throw new UserInvalidInputException();

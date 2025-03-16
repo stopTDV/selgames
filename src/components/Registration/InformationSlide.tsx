@@ -18,30 +18,20 @@ export enum Label {
   Student = "student",
   Parent = "parent",
   Educator = "educator",
-  Administrator = "administrator",
+  ADMINISTRATOR_AWAITING_APPROVAL = "administrator_awaiting_approval",
 }
 
 export const ROLE_LABEL_MAP: Record<Label, string> = {
   [Label.Student]: "Student",
   [Label.Parent]: "Parent",
   [Label.Educator]: "Educator",
-  [Label.Administrator]: "Administrator",
+  [Label.ADMINISTRATOR_AWAITING_APPROVAL]: "Administrator",
 };
 
 enum YesNo {
   Yes = "yes",
   No = "no",
 }
-
-enum AdminRequest {
-  Yes = "yes",
-  No = "no",
-}
-
-const ADMIN_PREFERENCE_LABEL_MAP: Record<AdminRequest, string> = {
-  [AdminRequest.Yes]: "Yes, I am",
-  [AdminRequest.No]: "No, I am not",
-};
 
 const AGE_LABEL_MAP: Record<YesNo, string> = {
   [YesNo.Yes]: "Yes, I am at least 13 years old",
@@ -53,7 +43,6 @@ const LAST_NAME_FORM_KEY = "lastName";
 const LABEL_FORM_KEY = "label";
 const AGE_FORM_KEY = "age";
 const TRACKED_FORM_KEY = "tracked";
-const ADMIN_FORM_KEY = "admin";
 
 export const informationSchema = z.object({
   firstName: z.string().min(1, { message: "This field is required" }),
@@ -74,12 +63,6 @@ export const informationSchema = z.object({
       message: "Sorry, you are not old enough to create an account",
     }),
   tracked: z.boolean(),
-
-  adminRequest: z.nativeEnum(AdminRequest, {
-    errorMap: (issue, ctx) => ({
-      message: "This field is required",
-    }),
-  }),
 });
 
 interface Props {
@@ -105,7 +88,6 @@ function InformationSlide({
     label: undefined,
     age: undefined,
     tracked: undefined,
-    adminRequest: undefined,
   });
 
   const [trackedChecked, setTrackedChecked] = useState<boolean>(true);
@@ -122,8 +104,8 @@ function InformationSlide({
       label: formData.get(LABEL_FORM_KEY),
       age: formData.get(AGE_FORM_KEY),
       tracked: formData.get(TRACKED_FORM_KEY) === "on",
-      adminRequest: formData.get(ADMIN_FORM_KEY) === AdminRequest.Yes,
     };
+
     const parse = informationSchema.safeParse(input);
     if (!parse.success) {
       const errors = parse.error.formErrors.fieldErrors;
@@ -133,7 +115,6 @@ function InformationSlide({
         label: errors.label?.at(0),
         age: errors.age?.at(0),
         tracked: errors.tracked?.at(0),
-        adminRequest: errors.adminRequest?.at(0),
       });
       return;
     }
@@ -142,22 +123,6 @@ function InformationSlide({
       ...parse.data,
     };
 
-    if (parse.data.label == "administrator") {
-      const admin = await fetch(
-        `/api/admin?email=${combinedAccountData.email}`,
-      );
-      if (!admin.ok) {
-        setIsAlertShowing(true);
-        setAlertType("generic");
-        return;
-      }
-      const admin_data = await admin.json();
-      if (Object.keys(admin_data).length == 0) {
-        setIsAlertShowing(true);
-        setAlertType("admin");
-        return;
-      }
-    }
     const res = await fetch("/api/users", {
       method: "POST",
       body: JSON.stringify(combinedAccountData),
@@ -238,34 +203,6 @@ function InformationSlide({
         </Select>
         <p className="absolute bottom-[-2em] text-xs text-red-500">
           {validationErrors.label}
-        </p>
-      </div>
-      <div className="relative col-span-2 w-full">
-        <label htmlFor={ADMIN_FORM_KEY} className="text-xl">
-          Making an Admin Account?*
-        </label>
-        <Select name={ADMIN_FORM_KEY}>
-          <SelectTrigger
-            className={
-              validationErrors.adminRequest
-                ? "border-red-500 focus-visible:ring-red-500"
-                : "border-input-border focus:border-blue-primary"
-            }
-          >
-            <SelectValue placeholder="Select an option" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(ADMIN_PREFERENCE_LABEL_MAP).map(
-              ([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ),
-            )}
-          </SelectContent>
-        </Select>
-        <p className="absolute bottom-[-2em] text-xs text-red-500">
-          {validationErrors.adminRequest}
         </p>
       </div>
       <div className="relative col-span-2 w-full">

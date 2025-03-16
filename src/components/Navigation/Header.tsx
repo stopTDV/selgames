@@ -21,6 +21,7 @@ const userLabelToType: Record<UserLabel, UserType> = {
   [UserLabel.Student]: UserType.AccountHolder,
   [UserLabel.Parent]: UserType.AccountHolder,
   [UserLabel.Administrator]: UserType.Admin,
+  [UserLabel.Administrator_Awaiting_Approval]: UserType.AccountHolder,
 };
 
 const tabLinks: Record<TabName, string[]> = {

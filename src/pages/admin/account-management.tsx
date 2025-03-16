@@ -15,6 +15,11 @@ import { Pencil, Trash } from "lucide-react";
 
 export type Admin = IAdmin & { _id: ObjectId };
 
+interface User {
+  _id: string;
+  email: string;
+}
+
 const AccountManagementPage = () => {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [newEmail, setNewEmail] = useState<string>("");
@@ -23,6 +28,9 @@ const AccountManagementPage = () => {
   const [deleteModalDisclosure, setDeleteModalDisclosure] = useState(false);
   const [chosenAdmin, setChosenAdmin] = useState<Admin | null>(null);
 
+  const [adminRequestedUsers, setAdminRequestedUsers] = useState<User[]>([]);
+  const [triggerFetch, setTriggerFetch] = useState<boolean>(false);
+
   const fetchData = async () => {
     try {
       const promise = await fetch("../api/admin");
@@ -30,6 +38,10 @@ const AccountManagementPage = () => {
       const removableAdmins = data.filter(
         (admin: Admin) => !UNDELETABLE_EMAILS.includes(admin.email),
       );
+
+      const response = await fetch("../api/users/adminRequests");
+      const requestUsers: User[] = await response.json();
+      setAdminRequestedUsers(requestUsers);
       setAdmins(removableAdmins);
     } catch (e) {
       console.log(e);
@@ -38,67 +50,79 @@ const AccountManagementPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [editModalDisclosure, deleteModalDisclosure]);
+  }, [editModalDisclosure, deleteModalDisclosure, triggerFetch]);
 
-  const handleAddAccount = async () => {
+  const handleAction = async (userID: string, action: "approve" | "deny") => {
     try {
-      const response = await fetch("../api/admin", {
+      const response = await fetch("/api/users/adminRequests/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: newEmail }),
+        body: JSON.stringify({ userID, action }),
       });
-      if (response.ok) {
-        fetchData();
-        setNewEmail("");
-        setEmailError("");
-      } else {
-        const res = await response.json();
-        setEmailError(res.error);
-      }
-    } catch (error) {
-      console.log("Error adding account:", error);
-    }
-  };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleAddAccount();
+      if (response.ok) {
+        setAdminRequestedUsers((prev) =>
+          prev.filter((user) => user._id !== userID),
+        );
+        setTriggerFetch(!triggerFetch);
+      }
+    } catch (err) {
+      console.error("Error processing user action:", err);
     }
   };
 
   return (
     <AdminTabs page={Pages.ACCOUNTMANAGEMENT}>
       <div className="px-18 my-6 flex flex-col">
-        <div className="font-['Poppins'] text-[24pt] font-semibold text-[#1A222B]">
-          Add New Admin Account
-        </div>
-        <div className="mt-6 flex flex-row flex-wrap gap-4">
-          <input
-            className={`h-12 flex-grow  rounded-xl border bg-gray-50 px-7 text-lg ${
-              emailError ? "border-red-600" : "border-stone-500"
-            }`}
-            placeholder="Email"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            onKeyDown={handleKeyPress}
-            name="Email"
-          />
-          <Button
-            variant="primary"
-            className="flex h-12 items-center justify-center space-x-2 rounded-[6px] bg-[#2352A0] px-[16px] font-['Poppins'] text-[18px] font-medium text-[#FFFFFF] hover:bg-[#4F75B3]"
-            onClick={handleAddAccount}
-          >
-            Add Account
-          </Button>
-        </div>
-        <div
-          className={`flex flex-row items-stretch gap-2 ${emailError === "" ? "mb-10" : "mb-1 mt-4"}`}
-        >
-          {emailError && <WarningIcon />}
-          <div className="text-sm font-normal text-red-600">{emailError}</div>
+        <div className="flex flex-col gap-6">
+          <div className="font-['Poppins'] text-[24pt] font-semibold text-[#1A222B]">
+            Approve Requested Admins
+          </div>
+          <div className="rounded-[8px] border border-[#E2EFFF]">
+            <div className="font-['DM Sans'] mx-1 flex flex-row items-center justify-between text-base font-medium leading-7 text-slate-400 ">
+              <div className="flex items-center py-3 pl-6 font-inter text-14pt font-medium text-[#7A8086]">
+                Email
+              </div>
+              <div className="flex items-center py-3 pr-6 font-inter text-14pt font-medium text-[#7A8086]">
+                Approve or Deny
+              </div>
+            </div>
+            <div className=" border border-[#E2EFFF]"></div>
+            {adminRequestedUsers.map((user, index) => {
+              return (
+                <div
+                  className="flex flex-row justify-between border-b border-[#E2EFFF] p-6"
+                  key={index}
+                >
+                  <div className="text-md break-all font-inter text-[#384414B]">
+                    {user.email}
+                  </div>
+                  <div className="flex gap-4 pr-4">
+                    <Button
+                      variant="mainorange"
+                      className="text-base"
+                      onClick={() => {
+                        handleAction(user._id, "approve");
+                      }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      variant="gray"
+                      className="text-base"
+                      onClick={() => {
+                        handleAction(user._id, "deny");
+                      }}
+                    >
+                      Deny
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <div className="mb-6 mt-12 font-['Poppins'] text-[24pt] font-semibold text-[#1A222B]">
           Manage Admin Accounts

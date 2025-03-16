@@ -19,7 +19,6 @@ const UserSchema = new Schema<IUser>({
     default: [],
   },
   tracked: { type: Boolean, default: true },
-  adminRequested: { type: Boolean, required: false, default: false },
 });
 
 const UserModel =
