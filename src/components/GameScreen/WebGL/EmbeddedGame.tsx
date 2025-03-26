@@ -62,7 +62,7 @@ export default function EmbeddedGame({
         createdDate: Date(),
         gameName: gameData?.name,
       };
-      logCustomEvent("Visit", "game", properties);
+      logCustomEvent("Gameplay", "game", properties);
     }
   }, [iframeLoaded, sessionStatus]);
 

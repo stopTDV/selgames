@@ -127,7 +127,8 @@ const formatUserTrafficData = (
 };
 
 const formatGameEventsData = async (
-  gameEvents?: any[],
+  downloadEvents?: any[],
+  playEvents?: any[],
   pdfEvents?: any[],
   visitEvents?: any[],
 ): Promise<{
@@ -135,6 +136,7 @@ const formatGameEventsData = async (
   leaderboardData: UserLeaderboardEntry[][];
 }> => {
   const gameDownloadCounts: Record<string, number> = {};
+  const gamePlayCounts: Record<string, number> = {};
   const pdfHitCounts: Record<string, number> = {};
   const userActivity: Record<
     string,
@@ -143,8 +145,8 @@ const formatGameEventsData = async (
 
   const gamePageHitsMap: Record<string, number> = {};
 
-  if (gameEvents) {
-    gameEvents.forEach((event) => {
+  if (downloadEvents) {
+    downloadEvents.forEach((event) => {
       const gameName = event.properties.gameName;
       const userId = event.properties.userId || "Unknown";
       const userGroup = event.properties.userGroup || "Unknown";
@@ -164,6 +166,14 @@ const formatGameEventsData = async (
         };
       }
       userActivity[gameName][userId].count += 1;
+    });
+  }
+
+  if (playEvents) {
+    playEvents.forEach((event) => {
+      const gameName = event.properties.gameName;
+      if (!gameName) return;
+      gamePlayCounts[gameName] = (gamePlayCounts[gameName] || 0) + 1;
     });
   }
 
@@ -211,6 +221,7 @@ const formatGameEventsData = async (
   const gameTitles = new Set([
     ...Object.keys(gameDownloadCounts),
     ...Object.keys(pdfHitCounts),
+    ...Object.keys(gamePlayCounts),
   ]);
   const gameData: GameData[] = Array.from(gameTitles).map((gameTitle) => {
     const userGroupCount: Record<string, number> = {
@@ -248,6 +259,7 @@ const formatGameEventsData = async (
         : 0,
       hitsToPDF: pdfHitCounts[gameTitle] || 0,
       downloads: gameDownloadCounts[gameTitle] || 0,
+      gameplays: gamePlayCounts[gameTitle] || 0,
       userGroupsData,
     };
   });
@@ -325,13 +337,13 @@ const CMSDashboardPage = () => {
         visitEvents ? visitEvents.events : [],
       );
 
-      const viewQueryParams = {
+      const playQueryParams = {
         projectName: "Jennifer Ann's",
         environment:
           process.env.NEXT_PUBLIC_ENV === "production"
             ? EventEnvironment.PRODUCTION
             : EventEnvironment.DEVELOPMENT,
-        category: "Visit",
+        category: "Gameplay",
         subcategory: "game",
         limit: 2000,
         afterId: undefined,
@@ -349,10 +361,7 @@ const CMSDashboardPage = () => {
       };
       const downloadGameEvents =
         await getCustomEventsPaginated(downloadQueryParams);
-      const viewGameEvents = await getCustomEventsPaginated(viewQueryParams);
-      const gameEvents = {
-        events: [...downloadGameEvents?.events, ...viewGameEvents?.events],
-      };
+      const playGameEvents = await getCustomEventsPaginated(playQueryParams);
 
       const pdfQueryParams = {
         projectName: "Jennifer Ann's",
@@ -368,7 +377,8 @@ const CMSDashboardPage = () => {
       const pdfEvents = await getCustomEventsPaginated(pdfQueryParams);
 
       const { gameData, leaderboardData } = await formatGameEventsData(
-        gameEvents?.events,
+        downloadGameEvents?.events,
+        playGameEvents?.events,
         pdfEvents?.events,
         visitEvents?.events,
       );
